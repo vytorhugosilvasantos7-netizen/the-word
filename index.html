@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <title>NOIRVERSE · Seu mundo, suas regras</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="calendar.css">
+  <link rel="stylesheet" href="game.css">
+  <link rel="stylesheet" href="office.css">
+</head>
+<body>
+  <main id="game" aria-label="Mundo 3D interativo">
+    <canvas id="scene" tabindex="-1" aria-label="Mundo 3D em terceira pessoa"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+    <header class="hud-top">
+      <div class="game-brand"><span class="brand-mark">N<span>✳</span></span><div><strong>NOIRVERSE<span>.</span></strong><small>YOUR WORLD. YOUR RULES.</small></div></div>
+      <div class="top-actions"><div class="world-status"><i></i> MUNDO PESSOAL <span> / </span> 01</div><button id="customize-button" class="hud-button"><span>◈</span> <b>PERSONALIZAR</b></button></div>
+    </header>
+    <div class="location-label"><span>✦ &nbsp; EXPLORE SEU ESPAÇO</span><strong>THE <i>HUB</i></strong><small>SEU PRÓXIMO CAPÍTULO COMEÇA AQUI.</small></div>
+    <div class="world-counter"><span>MISSÕES CONCLUÍDAS</span><strong id="hud-progress">0 <small>/ 0</small></strong><div><i id="hud-progress-bar"></i></div></div>
+    <div class="interaction-prompt" id="interaction" hidden><span>ENTER</span><div><small>ENTRAR EM</small><strong id="near-name"></strong></div><b>↗</b></div>
+    <div class="hud-bottom"><div class="controls"><div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>MOVER</span></div><div><kbd>↵</kbd><span>INTERAGIR</span></div><div><kbd>↔</kbd><span>ARRASTE PARA GIRAR A CÂMERA</span></div></div><div class="bottom-brand">UM MUNDO PARA <strong>EVOLUIR.</strong> &nbsp; ✳</div></div>
+    <div class="mobile-controls" aria-label="Controles de movimento"><button data-move="up" aria-label="Mover para cima">↑</button><div><button data-move="left" aria-label="Mover para esquerda">←</button><button data-move="down" aria-label="Mover para baixo">↓</button><button data-move="right" aria-label="Mover para direita">→</button></div><button id="mobile-enter">ENTRAR ↵</button></div>
+    <div id="game-error" role="alert" hidden>Não foi possível iniciar o mundo 3D. Verifique se a aceleração gráfica está ativada no navegador.</div>
+    <div id="transition-screen" aria-hidden="true"><span>✦</span><strong id="transition-name"></strong><small>ENTRANDO NO SEU ESPAÇO</small></div>
+  </main>
+
+  <dialog id="area-dialog">
+    <div class="dialog-header"><div><span class="section-kicker" id="dialog-kicker"></span><h2 id="dialog-title"></h2><p id="dialog-description"></p></div><button id="close-dialog" class="close-button" aria-label="Fechar e voltar ao mundo">✕</button></div>
+    <div id="area-content"></div>
+    <div class="dialog-footer"><span>✳ Salvo neste navegador.</span><button class="back-button" id="back-button">← Voltar ao mundo</button></div>
+  </dialog>
+
+  <dialog id="avatar-dialog">
+    <div class="dialog-header"><div><span class="section-kicker">SEU PERSONAGEM, SEU ESTILO</span><h2>Personalizar</h2><p>Escolha o visual para explorar o seu mundo.</p></div><button id="close-avatar" class="close-button" aria-label="Fechar personalização">✕</button></div>
+    <div class="avatar-options">
+      <label>Tom de pele <select id="avatar-skin"><option value="light">Claro</option><option value="medium">Médio</option><option value="dark">Escuro</option></select></label>
+      <label>Roupa <select id="avatar-outfit"><option value="dark">Preta</option><option value="light">Branca</option><option value="gray">Cinza</option><option value="blue">Azul</option><option value="coral">Coral</option><option value="green">Verde</option></select></label>
+      <label>Cabelo <select id="avatar-hair"><option value="dark">Preto</option><option value="light">Branco</option><option value="gray">Cinza</option><option value="brown">Castanho</option><option value="blond">Loiro</option></select></label>
+      <label>Estilo do cabelo <select id="avatar-style"><option value="short">Curto</option><option value="tall">Alto</option><option value="none">Sem cabelo</option></select></label>
+    </div>
+    <div class="dialog-footer"><span>Suas escolhas são salvas neste navegador.</span><button id="done-avatar" class="primary-button">Pronto</button></div>
+  </dialog>
+  <div id="notice" role="status" aria-live="polite"></div>
+  <script src="vendor/three.min.js"></script>
+  <script src="app.js"></script>
+  <script src="office.js"></script>
+  <script src="spaces.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
