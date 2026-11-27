@@ -1,4 +1,5 @@
 let officeSection = 'visao';
+let officeData;
 const officeSections = {
   visao: ['Visão geral', 'Seu espaço para tirar ideias do papel.'],
   projetos: ['Projetos', 'Acompanhe seus projetos do planejamento à entrega.'],
@@ -11,16 +12,16 @@ const projectStatuses = { planejado: 'Planejado', andamento: 'Em andamento', con
 const certificateStatuses = { planejado: 'Planejado', andamento: 'Em andamento', concluido: 'Concluído' };
 
 function officeTotals() {
-  const income = data.financas.filter(item => item.type === 'entrada').reduce((sum, item) => sum + item.amount, 0);
-  const expense = data.financas.filter(item => item.type === 'saida').reduce((sum, item) => sum + item.amount, 0);
+  const income = officeData.financas.filter(item => item.type === 'entrada').reduce((sum, item) => sum + item.amount, 0);
+  const expense = officeData.financas.filter(item => item.type === 'saida').reduce((sum, item) => sum + item.amount, 0);
   return { income, expense, balance: income - expense };
 }
 
 function renderOffice() {
   const [title, description] = officeSections[officeSection];
   content.innerHTML = `<div class="office">
-    <aside class="office-sidebar"><div class="office-brand"><span>✳</span><div><strong>NOIRVERSE</strong><small>WORKSPACE / 03</small></div></div>
-      <div class="office-menu-label">SEU ESCRITÓRIO</div><nav class="office-nav" aria-label="Navegação do escritório">
+    <aside class="office-sidebar"><div class="office-brand"><span>✳</span><div><strong>${activeArea === 'argos' ? 'ARGOS' : 'PESSOAL'}</strong><small>ESCRITÓRIO / 03</small></div></div>
+      <div class="office-menu-label">${activeArea === 'argos' ? 'CENTRAL ARGOS' : 'NEGÓCIOS PESSOAIS'}</div><nav class="office-nav" aria-label="Navegação do escritório">
         <button data-section="visao"><span>◫</span> Visão geral</button>
         <button data-section="projetos"><span>◈</span> Projetos</button>
         <button data-section="tarefas"><span>☑</span> Tarefas</button>
@@ -28,7 +29,7 @@ function renderOffice() {
         <button data-section="certificados"><span>✧</span> Certificados</button>
         <button data-section="financas"><span>＄</span> Finanças</button>
       </nav><div class="office-sidebar-bottom"><span>✦</span><p>Grandes ideias começam<br>com um primeiro passo.</p></div>
-      <button id="office-exit" class="office-exit">← &nbsp; Voltar ao mundo</button>
+      <button id="office-exit" class="office-exit">← &nbsp; Voltar ao hall</button>
     </aside>
     <div class="office-main"><header class="office-top"><span>SEU ESPAÇO / <b id="office-breadcrumb"></b></span><span class="office-save">● &nbsp; SALVO NESTE NAVEGADOR</span><button id="office-close" aria-label="Sair do escritório">✕</button></header>
       <div class="office-page"><div class="office-heading"><div><span class="office-eyebrow">SEU MUNDO. SEUS PLANOS. ✦</span><h2 id="office-title"></h2><p id="office-description"></p></div><div class="office-heading-icon">✳</div></div>
@@ -75,9 +76,9 @@ function officeCard(label, value, note, color) {
 
 function renderOfficeOverview(panel) {
   const totals = officeTotals();
-  const active = data.projetos.filter(item => item.status === 'andamento').length;
-  const complete = data.projetos.filter(item => item.status === 'concluido').length;
-  const pending = data.tarefas.filter(item => !item.done).length;
+  const active = officeData.projetos.filter(item => item.status === 'andamento').length;
+  const complete = officeData.projetos.filter(item => item.status === 'concluido').length;
+  const pending = officeData.tarefas.filter(item => !item.done).length;
   panel.innerHTML = `<div class="office-stats" id="office-stats"></div>
     <div class="office-overview-grid"><section class="office-box office-welcome"><span class="office-box-kicker">SEU PRÓXIMO PASSO</span><h3>Ideias grandes.<br><em>Pequenos passos.</em></h3><p>Organize seus projetos, acompanhe suas conquistas e construa o seu futuro no seu ritmo.</p><button class="office-action" data-go="projetos">VER MEUS PROJETOS ↗</button><div class="welcome-orbit">✳</div></section>
     <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">EM FOCO</span><h3>Próximas tarefas</h3></div><button class="office-text-button" data-go="tarefas">Ver todas ↗</button></div><div id="overview-tasks" class="office-list"></div></section></div>`;
@@ -85,11 +86,11 @@ function renderOfficeOverview(panel) {
   stats.append(
     officeCard('PROJETOS EM ANDAMENTO', String(active).padStart(2, '0'), `${complete} concluído(s)`, 'stat-blue'),
     officeCard('TAREFAS PENDENTES', String(pending).padStart(2, '0'), 'Um passo de cada vez', 'stat-peach'),
-    officeCard('CERTIFICADOS', String(data.certificados.length).padStart(2, '0'), 'Planejados e conquistados', 'stat-lavender'),
+    officeCard('CERTIFICADOS', String(officeData.certificados.length).padStart(2, '0'), 'Planejados e conquistados', 'stat-lavender'),
     officeCard('SALDO', money(totals.balance), 'Entradas menos saídas', 'stat-mint')
   );
   const list = panel.querySelector('#overview-tasks');
-  const tasks = data.tarefas.filter(item => !item.done).slice(0, 4);
+  const tasks = officeData.tarefas.filter(item => !item.done).slice(0, 4);
   if (!tasks.length) addEmpty(list, 'Nenhuma tarefa pendente por aqui.');
   tasks.forEach(item => {
     const row = document.createElement('div');
@@ -137,7 +138,7 @@ function removeButton(collection, item) {
   button.textContent = '×';
   button.setAttribute('aria-label', `Excluir ${item.title}`);
   button.addEventListener('click', () => {
-    data[collection] = data[collection].filter(entry => entry !== item);
+    officeData[collection] = officeData[collection].filter(entry => entry !== item);
     saveData();
     updateProgress();
     renderOffice();
@@ -187,7 +188,7 @@ function renderProjects(panel, portfolio) {
       <label>Link do projeto <span>(opcional)</span><input name="link" type="url" placeholder="https://..."></label>
       <label class="office-check"><input name="featured" type="checkbox"> Mostrar no portfólio</label>
       <button class="office-action" type="submit">+ ADICIONAR PROJETO</button></form></section>
-      <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">SEUS PLANOS</span><h3>Meus projetos</h3></div><span class="office-count">${data.projetos.length}</span></div><div id="office-items" class="office-items"></div></section></div>`;
+      <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">SEUS PLANOS</span><h3>Meus projetos</h3></div><span class="office-count">${officeData.projetos.length}</span></div><div id="office-items" class="office-items"></div></section></div>`;
     panel.querySelector('#office-form').addEventListener('submit', event => {
       event.preventDefault();
       const form = event.currentTarget;
@@ -196,13 +197,13 @@ function renderProjects(panel, portfolio) {
       if (!title) return invalidTitle(form);
       const link = values.get('link').trim();
       if (!validLink(link)) return showLinkError(form.elements.link);
-      data.projetos.push({ title, description: values.get('description').trim(), status: values.get('status'), link, featured: values.has('featured') });
+      officeData.projetos.push({ title, description: values.get('description').trim(), status: values.get('status'), link, featured: values.has('featured') });
       saveData();
       renderOffice();
     });
   }
   const list = panel.querySelector('#office-items');
-  const items = portfolio ? data.projetos.filter(item => item.featured) : data.projetos;
+  const items = portfolio ? officeData.projetos.filter(item => item.featured) : officeData.projetos;
   if (!items.length) addEmpty(list, portfolio ? 'Nenhum projeto em destaque. Marque um projeto para adicioná-lo ao portfólio.' : 'Seus projetos vão aparecer aqui.');
   [...items].reverse().forEach(item => {
     const row = createOfficeItem(item.title, item.description || 'Sem descrição');
@@ -271,21 +272,21 @@ function renderOfficeTasks(panel) {
   panel.innerHTML = `<div class="office-content-grid"><section class="office-box"><span class="office-box-kicker">PRÓXIMO PASSO</span><h3>Nova tarefa</h3>
     <form id="office-form" class="office-form"><label>O que precisa ser feito?<input name="title" maxlength="100" placeholder="Ex.: Preparar apresentação" required></label>
     <label>Prazo <span>(opcional)</span><input name="date" type="date"></label><button class="office-action" type="submit">+ ADICIONAR TAREFA</button></form></section>
-    <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">UM PASSO DE CADA VEZ</span><h3>Minhas tarefas</h3></div><span class="office-count">${data.tarefas.filter(item => !item.done).length} pendentes</span></div><div id="office-items" class="office-items"></div></section></div>`;
+    <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">UM PASSO DE CADA VEZ</span><h3>Minhas tarefas</h3></div><span class="office-count">${officeData.tarefas.filter(item => !item.done).length} pendentes</span></div><div id="office-items" class="office-items"></div></section></div>`;
   panel.querySelector('#office-form').addEventListener('submit', event => {
     event.preventDefault();
     const form = event.currentTarget;
     const values = new FormData(form);
     const title = values.get('title').trim();
     if (!title) return invalidTitle(form);
-    data.tarefas.push({ title, date: values.get('date'), done: false });
+    officeData.tarefas.push({ title, date: values.get('date'), done: false });
     saveData();
     updateProgress();
     renderOffice();
   });
   const list = panel.querySelector('#office-items');
-  if (!data.tarefas.length) addEmpty(list, 'Adicione uma tarefa para começar.');
-  [...data.tarefas].reverse().forEach(item => {
+  if (!officeData.tarefas.length) addEmpty(list, 'Adicione uma tarefa para começar.');
+  [...officeData.tarefas].reverse().forEach(item => {
     const row = createOfficeItem(item.title, item.date ? `Prazo: ${formatDate(item.date)}` : 'Sem prazo');
     if (item.done) row.classList.add('office-done');
     const checkbox = document.createElement('input');
@@ -305,20 +306,20 @@ function renderCertificates(panel) {
     <label>Instituição <span>(opcional)</span><input name="institution" maxlength="100" placeholder="Ex.: Nome da plataforma"></label>
     <label>Status<select name="status"><option value="planejado">Planejado</option><option value="andamento">Em andamento</option><option value="concluido">Concluído</option></select></label>
     <label>Data <span>(opcional)</span><input name="date" type="date"></label><button class="office-action" type="submit">+ ADICIONAR CERTIFICADO</button></form></section>
-    <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">SUA JORNADA</span><h3>Meus certificados</h3></div><span class="office-count">${data.certificados.length}</span></div><div id="office-items" class="office-items"></div></section></div>`;
+    <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">SUA JORNADA</span><h3>Meus certificados</h3></div><span class="office-count">${officeData.certificados.length}</span></div><div id="office-items" class="office-items"></div></section></div>`;
   panel.querySelector('#office-form').addEventListener('submit', event => {
     event.preventDefault();
     const form = event.currentTarget;
     const values = new FormData(form);
     const title = values.get('title').trim();
     if (!title) return invalidTitle(form);
-    data.certificados.push({ title, institution: values.get('institution').trim(), status: values.get('status'), date: values.get('date') });
+    officeData.certificados.push({ title, institution: values.get('institution').trim(), status: values.get('status'), date: values.get('date') });
     saveData();
     renderOffice();
   });
   const list = panel.querySelector('#office-items');
-  if (!data.certificados.length) addEmpty(list, 'Suas certificações vão aparecer aqui.');
-  [...data.certificados].reverse().forEach(item => {
+  if (!officeData.certificados.length) addEmpty(list, 'Suas certificações vão aparecer aqui.');
+  [...officeData.certificados].reverse().forEach(item => {
     const row = createOfficeItem(item.title, [item.institution, formatDate(item.date)].filter(Boolean).join(' · ') || 'Sem detalhes');
     const actions = document.createElement('div');
     actions.className = 'office-item-actions';
@@ -335,7 +336,7 @@ function renderOfficeFinance(panel) {
     <label>Tipo<select name="type"><option value="entrada">Entrada</option><option value="saida">Saída</option></select></label>
     <label>Valor em R$<input name="amount" type="number" min="0.01" step="0.01" placeholder="0,00" required></label>
     <label>Data <span>(opcional)</span><input name="date" type="date"></label><button class="office-action" type="submit">+ ADICIONAR MOVIMENTAÇÃO</button></form></section>
-    <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">HISTÓRICO</span><h3>Movimentações</h3></div><span class="office-count">${data.financas.length}</span></div><div id="office-items" class="office-items"></div></section></div>`;
+    <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">HISTÓRICO</span><h3>Movimentações</h3></div><span class="office-count">${officeData.financas.length}</span></div><div id="office-items" class="office-items"></div></section></div>`;
   panel.querySelector('#office-stats').append(
     officeCard('ENTRADAS', money(totals.income), 'Total recebido', 'stat-mint'),
     officeCard('SAÍDAS', money(totals.expense), 'Total registrado', 'stat-peach'),
@@ -349,13 +350,13 @@ function renderOfficeFinance(panel) {
     if (!title) return invalidTitle(form);
     const amount = Number(values.get('amount'));
     if (!Number.isFinite(amount) || amount <= 0) { notify('Informe um valor maior que zero.'); return; }
-    data.financas.push({ title, amount, type: values.get('type'), date: values.get('date') });
+    officeData.financas.push({ title, amount, type: values.get('type'), date: values.get('date') });
     saveData();
     renderOffice();
   });
   const list = panel.querySelector('#office-items');
-  if (!data.financas.length) addEmpty(list, 'Suas movimentações vão aparecer aqui.');
-  [...data.financas].reverse().forEach(item => {
+  if (!officeData.financas.length) addEmpty(list, 'Suas movimentações vão aparecer aqui.');
+  [...officeData.financas].reverse().forEach(item => {
     const row = createOfficeItem(item.title, [item.type === 'entrada' ? 'Entrada' : 'Saída', formatDate(item.date)].filter(Boolean).join(' · '));
     const amount = document.createElement('strong');
     amount.className = item.type === 'entrada' ? 'office-income' : 'office-expense';

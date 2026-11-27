@@ -21,7 +21,8 @@ function renderPersonalSpace() {
   ).join('');
   content.innerHTML = `<div class="office personal-space ${activeArea}">
     <aside class="office-sidebar"><div class="office-brand"><span>${config.icon}</span><div><strong>NOIRVERSE</strong><small>${config.workspace}</small></div></div>
-      <div class="office-menu-label">${config.menu}</div><nav class="office-nav" aria-label="Navegação de ${config.name}">${navigation}</nav>
+      <div class="office-menu-label">${config.menu}</div><nav class="office-nav" aria-label="Navegação de ${config.name}">${navigation}
+        ${activeArea === 'estudos' ? '<a class="college-nav-link" href="https://novoportal.cruzeirodosul.edu.br/gfa/home" target="_blank" rel="noopener noreferrer"><span>↗</span> Entrar na faculdade</a>' : ''}</nav>
       <div class="office-sidebar-bottom"><span>✦</span><p>${config.subtitle}</p></div>
       <button id="space-exit" class="office-exit">← &nbsp; Voltar ao mundo</button></aside>
     <div class="office-main"><header class="office-top"><span>SEU ESPAÇO / <b>${title.toUpperCase()}</b></span><span class="office-save">● &nbsp; DADOS NESTE NAVEGADOR</span><button id="space-close" aria-label="Sair de ${config.name}">✕</button></header>
@@ -55,6 +56,11 @@ function renderSpaceOverview(panel, config) {
       <p>${config.subtitle} Organize seus planos e acompanhe cada conquista.</p>
       <button class="office-action" id="space-manage">${activeArea === 'treinos' ? 'ORGANIZAR TREINOS' : 'ORGANIZAR ESTUDOS'} ↗</button><div class="welcome-orbit">${config.icon}</div></section>
       <section class="office-box"><div class="office-box-heading"><div><span class="office-box-kicker">EM FOCO</span><h3>${activeArea === 'treinos' ? 'Exercícios pendentes' : 'Compromissos pendentes'}</h3></div><button class="office-text-button" id="space-view-all">Ver todos ↗</button></div><div id="space-pending" class="office-list"></div></section></div>`;
+  if (activeArea === 'estudos') {
+    panel.insertAdjacentHTML('beforeend', `<section class="office-box college-portal">
+      <div><span class="office-box-kicker">SEU PORTAL ACADÊMICO</span><h3>Minha faculdade</h3><p>Acesse o portal da Cruzeiro do Sul em uma nova aba.</p></div>
+      <a class="office-action" href="https://novoportal.cruzeirodosul.edu.br/gfa/home" target="_blank" rel="noopener noreferrer">ENTRAR NA FACULDADE ↗</a></section>`);
+  }
   const stats = panel.querySelector('#space-stats');
   stats.append(
     officeCard('TOTAL', String(items.length).padStart(2, '0'), activeArea === 'treinos' ? 'Exercícios na rotina' : 'Compromissos registrados', 'stat-blue'),

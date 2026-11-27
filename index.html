@@ -20,6 +20,7 @@
     </header>
     <div class="location-label"><span>✦ &nbsp; EXPLORE SEU ESPAÇO</span><strong>THE <i>HUB</i></strong><small>SEU PRÓXIMO CAPÍTULO COMEÇA AQUI.</small></div>
     <div class="world-counter"><span>MISSÕES CONCLUÍDAS</span><strong id="hud-progress">0 <small>/ 0</small></strong><div><i id="hud-progress-bar"></i></div></div>
+    <div id="lobby-hint" hidden>HALL DOS ESCRITÓRIOS · Ande até uma porta e pressione Enter. A porta de saída fica à direita.</div>
     <div class="interaction-prompt" id="interaction" hidden><span>ENTER</span><div><small>ENTRAR EM</small><strong id="near-name"></strong></div><b>↗</b></div>
     <div class="hud-bottom"><div class="controls"><div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>MOVER</span></div><div><kbd>↵</kbd><span>INTERAGIR</span></div><div><kbd>↔</kbd><span>ARRASTE PARA GIRAR A CÂMERA</span></div></div><div class="bottom-brand">UM MUNDO PARA <strong>EVOLUIR.</strong> &nbsp; ✳</div></div>
     <div class="mobile-controls" aria-label="Controles de movimento"><button data-move="up" aria-label="Mover para cima">↑</button><div><button data-move="left" aria-label="Mover para esquerda">←</button><button data-move="down" aria-label="Mover para baixo">↓</button><button data-move="right" aria-label="Mover para direita">→</button></div><button id="mobile-enter">ENTRAR ↵</button></div>
@@ -36,10 +37,14 @@
   <dialog id="avatar-dialog">
     <div class="dialog-header"><div><span class="section-kicker">SEU PERSONAGEM, SEU ESTILO</span><h2>Personalizar</h2><p>Escolha o visual para explorar o seu mundo.</p></div><button id="close-avatar" class="close-button" aria-label="Fechar personalização">✕</button></div>
     <div class="avatar-options">
+      <label>Tema <select id="avatar-theme"><option value="hero">Herói original</option><option value="casual">Roupa casual</option></select></label>
       <label>Tom de pele <select id="avatar-skin"><option value="light">Claro</option><option value="medium">Médio</option><option value="dark">Escuro</option></select></label>
-      <label>Roupa <select id="avatar-outfit"><option value="dark">Preta</option><option value="light">Branca</option><option value="gray">Cinza</option><option value="blue">Azul</option><option value="coral">Coral</option><option value="green">Verde</option></select></label>
+      <label>Roupa casual <select id="avatar-outfit"><option value="dark">Preta</option><option value="light">Branca</option><option value="gray">Cinza</option><option value="blue">Azul</option><option value="coral">Coral</option><option value="green">Verde</option><option value="custom">Cores personalizadas</option></select></label>
       <label>Cabelo <select id="avatar-hair"><option value="dark">Preto</option><option value="light">Branco</option><option value="gray">Cinza</option><option value="brown">Castanho</option><option value="blond">Loiro</option></select></label>
       <label>Estilo do cabelo <select id="avatar-style"><option value="short">Curto</option><option value="tall">Alto</option><option value="none">Sem cabelo</option></select></label>
+      <label>Cor principal <input id="avatar-primary" type="color" value="#184d78"></label>
+      <label>Cor secundária <input id="avatar-secondary" type="color" value="#15263e"></label>
+      <label>Detalhes do herói <input id="avatar-accent" type="color" value="#ffc758"></label>
     </div>
     <div class="dialog-footer"><span>Suas escolhas são salvas neste navegador.</span><button id="done-avatar" class="primary-button">Pronto</button></div>
   </dialog>

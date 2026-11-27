@@ -1,11 +1,13 @@
 const STORAGE_KEY = 'meu-mundo-dados-v1';
-const names = { treinos: 'Treinos', estudos: 'Estudos', financas: 'Escritório' };
+const names = { treinos: 'Treinos', estudos: 'Estudos', financas: 'Negócios pessoais', argos: 'Argos' };
 const descriptions = {
   treinos: ['CUIDE DE VOCÊ', 'Treinos', 'Monte sua rotina e acompanhe cada conquista.'],
   estudos: ['EXPLORE IDEIAS', 'Estudos', 'Organize suas atividades, provas e próximos passos.'],
-  financas: ['CONSTRUA SEU FUTURO', 'Escritório', 'Acompanhe suas entradas, saídas e seu saldo.']
+  financas: ['SEU ESPAÇO', 'Negócios pessoais', 'Organize seus negócios, projetos e finanças pessoais.'],
+  argos: ['CONSTRUA SEU FUTURO', 'Argos', 'Organize os negócios, projetos e finanças da Argos.']
 };
-const emptyData = () => ({ treinos: [], estudos: [], financas: [], projetos: [], tarefas: [], certificados: [] });
+const emptyOffice = () => ({ financas: [], projetos: [], tarefas: [], certificados: [] });
+const emptyData = () => ({ treinos: [], estudos: [], ...emptyOffice(), argos: emptyOffice() });
 let data = emptyData();
 let activeArea = null;
 let calendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -37,6 +39,11 @@ function loadData() {
       if (parsed[key] === undefined) parsed[key] = [];
       else if (!Array.isArray(parsed[key])) throw new Error(`Dados inválidos: ${key}`);
     }
+    if (parsed.argos === undefined) parsed.argos = emptyOffice();
+    else if (!parsed.argos || typeof parsed.argos !== 'object' ||
+      !['financas', 'projetos', 'tarefas', 'certificados'].every(key => Array.isArray(parsed.argos[key]))) {
+      throw new Error('Dados inválidos: Argos');
+    }
     data = parsed;
   } catch (error) {
     console.error('Não foi possível carregar os dados:', error);
@@ -61,7 +68,7 @@ function saveData() {
 }
 
 function updateProgress() {
-  const missions = [...data.treinos, ...data.estudos, ...data.tarefas];
+  const missions = [...data.treinos, ...data.estudos, ...data.tarefas, ...data.argos.tarefas];
   const completed = missions.filter(item => item.done).length;
   const percent = missions.length ? Math.round(completed / missions.length * 100) : 0;
   const counter = document.querySelector('#hud-progress');
@@ -76,6 +83,10 @@ function updateProgress() {
 function openArea(area) {
   if (!descriptions[area]) return;
   activeArea = area;
+  if (area === 'financas' || area === 'argos') {
+    officeData = area === 'argos' ? data.argos : data;
+    officeSection = 'visao';
+  }
   dialog.classList.add('office-dialog');
   dialog.setAttribute('aria-label', names[area]);
   const [kicker, title, description] = descriptions[area];
@@ -98,7 +109,7 @@ function money(value) {
 
 function renderArea() {
   const area = activeArea;
-  if (area === 'financas') {
+  if (area === 'financas' || area === 'argos') {
     renderOffice();
     return;
   }
